@@ -1,0 +1,193 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+
+class MetroSystem {
+private:
+    vector<string> stations;
+
+public:
+    MetroSystem() {
+        stations = {
+            "Rajiv Chowk", "Kashmere Gate", "Central Secretariat", "Hauz Khas",
+            "AIIMS", "INA", "Lajpat Nagar", "Nehru Place", "Kalkaji Mandir", "Govindpuri"
+        };
+    }
+
+    void showStations() {
+        cout << "\nList of Metro Stations (with Codes):\n";
+        for (size_t i = 0; i < stations.size(); ++i) {
+            cout << (i + 1) << ". " << stations[i] << endl;
+        }
+    }
+
+    int calculateMetroFare(int fromCode, int toCode) {
+        int hops = abs(toCode - fromCode);
+        return hops * 5;
+    }
+
+    double calculateDistance(int fromCode, int toCode) {
+        int hops = abs(toCode - fromCode);
+        return hops * 1.2;
+    }
+
+    void findRoute(int fromCode, int toCode) {
+        int n = stations.size();
+        if (fromCode < 1 || fromCode > n || toCode < 1 || toCode > n) {
+            cout << "Invalid station codes.\n";
+            return;
+        }
+
+        fromCode--; toCode--;
+        if (fromCode > toCode) swap(fromCode, toCode);
+
+        cout << "\nRoute from " << stations[fromCode] << " to " << stations[toCode] << ":\n";
+        for (int i = fromCode; i <= toCode; ++i) {
+            cout << stations[i];
+            if (i != toCode) cout << " -> ";
+        }
+
+        int fare = calculateMetroFare(fromCode, toCode);
+        cout << "\nEstimated Metro Fare: ₹" << fare << endl;
+    }
+
+    void compareFare(int fromCode, int toCode) {
+        int n = stations.size();
+        if (fromCode < 1 || fromCode > n || toCode < 1 || toCode > n) {
+            cout << "Invalid station codes.\n";
+            return;
+        }
+
+        fromCode--; toCode--;
+        int hops = abs(toCode - fromCode);
+        double distance = hops * 1.2;
+        int metroFare = calculateMetroFare(fromCode, toCode);
+        double rickshawFare = distance * 15;
+        double olaFare = distance * 25;
+
+        cout << fixed << setprecision(2);
+        cout << "\nComparing Fares from " << stations[fromCode] << " to " << stations[toCode] << ":\n";
+        cout << "-----------------------------------------------------\n";
+        cout << "Approx Distance       : " << distance << " km\n";
+        cout << "Metro Fare (₹5/stn)   : ₹" << metroFare << endl;
+        cout << "Rickshaw Fare (₹15/km): ₹" << rickshawFare << endl;
+        cout << "Ola Cab Fare (₹25/km) : ₹" << olaFare << endl;
+    }
+
+    void buyMetroTicket(int fromCode, int toCode, double &wallet) {
+        int n = stations.size();
+        if (fromCode < 1 || fromCode > n || toCode < 1 || toCode > n) {
+            cout << "Invalid station codes.\n";
+            return;
+        }
+
+        fromCode--; toCode--;
+        int fare = calculateMetroFare(fromCode, toCode);
+
+        if (wallet < fare) {
+            cout << "\n❌ Insufficient balance in pocket! Current: ₹" << wallet << ", Required: ₹" << fare << "\n";
+            return;
+        }
+
+        wallet -= fare;
+        cout << "\n🎫 Metro Ticket Purchased Successfully!\n";
+        cout << "From     : " << stations[fromCode] << endl;
+        cout << "To       : " << stations[toCode] << endl;
+        cout << "Fare     : ₹" << fare << endl;
+        cout << "Remaining Balance: ₹" << wallet << endl;
+    }
+
+    void callOlaCab(int fromCode, int toCode, double &wallet) {
+        int n = stations.size();
+        if (fromCode < 1 || fromCode > n || toCode < 1 || toCode > n) {
+            cout << "Invalid station codes.\n";
+            return;
+        }
+
+        fromCode--; toCode--;
+        double distance = calculateDistance(fromCode, toCode);
+        double fare = distance * 25;
+
+        if (wallet < fare) {
+            cout << "\n❌ Insufficient balance in pocket! Current: ₹" << wallet << ", Required: ₹" << fare << "\n";
+            return;
+        }
+
+        wallet -= fare;
+        cout << fixed << setprecision(2);
+        cout << "\n🚗 Ola Cab Booked Successfully!\n";
+        cout << "From     : " << stations[fromCode] << endl;
+        cout << "To       : " << stations[toCode] << endl;
+        cout << "Distance : " << distance << " km\n";
+        cout << "Fare     : ₹" << fare << endl;
+        cout << "Remaining Balance: ₹" << wallet << endl;
+        cout << "Your cab will arrive in 5 minutes. Thank you for choosing Ola!\n";
+    }
+};
+
+int main() {
+    MetroSystem metro;
+    int choice;
+    int fromCode, toCode;
+    double pocket = 1000.0; // user's wallet
+
+    while (true) {
+        cout << "\n==== Metro Management System ====\n";
+        cout << "Pocket Balance: ₹" << fixed << setprecision(2) << pocket << endl;
+        cout << "1. Show Stations\n";
+        cout << "2. Find Route & Metro Fare\n";
+        cout << "3. Compare Fare (Metro vs Rickshaw vs Ola)\n";
+        cout << "4. Buy Metro Ticket\n";
+        cout << "5. Call Ola Cab\n";
+        cout << "6. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            metro.showStations();
+            break;
+        case 2:
+            metro.showStations();
+            cout << "\nEnter starting station code: ";
+            cin >> fromCode;
+            cout << "Enter destination station code: ";
+            cin >> toCode;
+            metro.findRoute(fromCode, toCode);
+            break;
+        case 3:
+            metro.showStations();
+            cout << "\nEnter starting station code: ";
+            cin >> fromCode;
+            cout << "Enter destination station code: ";
+            cin >> toCode;
+            metro.compareFare(fromCode, toCode);
+            break;
+        case 4:
+            metro.showStations();
+            cout << "\nEnter starting station code: ";
+            cin >> fromCode;
+            cout << "Enter destination station code: ";
+            cin >> toCode;
+            metro.buyMetroTicket(fromCode, toCode, pocket);
+            break;
+        case 5:
+            metro.showStations();
+            cout << "\nEnter pickup station code: ";
+            cin >> fromCode;
+            cout << "Enter drop station code: ";
+            cin >> toCode;
+            metro.callOlaCab(fromCode, toCode, pocket);
+            break;
+        case 6:
+            cout << "Exiting...\n";
+            return 0;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    }
+
+    return 0;
+}
